@@ -1,0 +1,26 @@
+# 依赖
+node_modules/
+package-lock.json
+
+# 编辑器 / 系统
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# WorkBuddy 工作区数据（不上传）
+.workbuddy/
+
+# 本地临时测试文件
+_check.mjs
+_client.js
+_extract.mjs
+_test.mjs
+
+# 一次性发布脚本（含本机路径，不上传）
+_publish.mjs
+_publish.sh
+
+# 本地私有配置（可能含真实域名）
+.dev.vars
+.env

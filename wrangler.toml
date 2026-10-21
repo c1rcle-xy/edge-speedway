@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────
+# edge-speedway · 部署示例（Cloudflare Workers）
+#   部署：wrangler deploy
+#   本地：wrangler dev
+# ─────────────────────────────────────────────────────────────
+
+name = "edge-speedway"
+main = "edge-speedway.js"
+compatibility_date = "2026-01-01"
+
+# 普通环境变量（明文）。敏感信息请用 `wrangler secret put`。
+[vars]
+# 站点列表：换行 / 逗号 / 分号分隔都行，也可以写成 "名称=https://..."
+TARGETS = """
+香港=https://hk.example.com
+日本=https://jp.example.com
+新加坡=https://sg.example.com
+"""
+PROBES = "3"
+TIMEOUT = "2000"
+BUDGET = "4000"
+METHOD = "HEAD"
+PRESERVE_PATH = "true"
+# 同一机房 60 秒内复用上次结论，可把首屏耗时压到接近 0
+MEMO_SECONDS = "60"
+# 想要带进度条的跳转页就把下面打开；服务端测速用 edge，浏览器测速用 client
+# MODE = "edge"
+# HTML = "false"
+
+# 绑定到自有域名（可选）：跳转要快，建议绑一个和源站不同线路的域名
+# [[routes]]
+# pattern = "go.example.com/*"
+# zone_name = "example.com"
