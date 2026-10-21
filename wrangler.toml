@@ -1,33 +1,29 @@
 # ─────────────────────────────────────────────────────────────
-# edge-speedway · 部署示例（Cloudflare Workers）
-#   部署：wrangler deploy
-#   本地：wrangler dev
+# edge-speedway · Cloudflare Workers 部署骨架
+#
+# ⚠ 跳转域名（站点列表）不写在这里，请在 Cloudflare 控制台手动配置：
+#     Workers & Pages → 选中 Worker → Settings / 设置
+#     → Variables and Secrets / 变量和机密 → Add / 添加
+#     → 变量名 TARGETS，值填多个域名（每行一个）
+#
+#   为什么不写进下面的 [vars]？
+#   用 wrangler deploy 时，wrangler.toml 的 [vars] 是普通环境变量的唯一来源，
+#   部署会把控制台上手动添加的普通变量覆盖掉。所以这里刻意留空，
+#   保证控制台里的配置不会被一次命令行部署清空。
+#   （想在命令行部署时也绝对安全，可把 TARGETS 在控制台存成 Secret/机密，
+#     wrangler 不会改动机密变量。）
 # ─────────────────────────────────────────────────────────────
 
 name = "edge-speedway"
 main = "edge-speedway.js"
 compatibility_date = "2026-01-01"
 
-# 普通环境变量（明文）。敏感信息请用 `wrangler secret put`。
-[vars]
-# 站点列表：换行 / 逗号 / 分号分隔都行，也可以写成 "名称=https://..."
-TARGETS = """
-香港=https://hk.example.com
-日本=https://jp.example.com
-新加坡=https://sg.example.com
-"""
-PROBES = "3"
-TIMEOUT = "2000"
-BUDGET = "4000"
-METHOD = "HEAD"
-PRESERVE_PATH = "true"
-# 同一机房 60 秒内复用上次结论，可把首屏耗时压到接近 0
-MEMO_SECONDS = "60"
-# 想要带进度条的跳转页就把下面打开；服务端测速用 edge，浏览器测速用 client
-# MODE = "edge"
-# HTML = "false"
+# 其余可调参数同样留空，全部在控制台手动设置：
+#   TARGETS / FALLBACK / MODE / PROBES / TIMEOUT / BUDGET / METHOD
+#   BUST / PRESERVE_PATH / MEMO_SECONDS / REDIRECT_STATUS / HTML / DEBUG
+# 没设置的项会自动使用代码内默认值，不必全部填。
 
-# 绑定到自有域名（可选）：跳转要快，建议绑一个和源站不同线路的域名
+# 绑定自有域名（可选）
 # [[routes]]
 # pattern = "go.example.com/*"
 # zone_name = "example.com"

@@ -10,7 +10,9 @@
  * 4. 全部失败时回退到列表第一个（或 FALLBACK 指定项）
  *
  * ── 环境变量 ────────────────────────────────────────────────
- * TARGETS        必填。站点列表，支持换行 / 逗号 / 分号 / JSON 数组；
+ * TARGETS        必填。跳转域名列表，在 Cloudflare 控制台手动设置
+ *                （Workers & Pages → Settings → Variables and Secrets），
+ *                仓库/配置文件里不放域名。支持换行 / 逗号 / 分号 / JSON 数组；
  *                可写成 "香港=https://hk.example.com" 形式给站点起名
  * FALLBACK       全失败时的兜底站点（URL 或列表中的序号，从 1 开始）
  * MODE           edge（默认，边缘侧测速）| client（浏览器侧测速，更贴近真实体验）
@@ -425,7 +427,11 @@ async function handle(request, env) {
       {
         ok: false,
         error: '缺少环境变量 TARGETS',
-        hint: '在边缘函数控制台新增环境变量 TARGETS，值为站点列表（换行或逗号分隔），例如：\nhttps://a.example.com\nhttps://b.example.com',
+        hint:
+          '请在 Cloudflare 控制台手动配置：Workers & Pages → 选中本 Worker → Settings / 设置 → ' +
+          'Variables and Secrets / 变量和机密 → Add / 添加，变量名 TARGETS，值填跳转域名（每行一个），' +
+          '保存并重新部署。\n' +
+          '示例：\nhttps://a.example.com\nhttps://b.example.com',
       },
       500
     );

@@ -10,19 +10,30 @@
 
 ## 快速开始
 
-### 1. 部署（Cloudflare Workers）
+### 1. 部署
+
+**控制台方式（推荐，不用装任何工具）**
+
+1. 打开 [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create** → **Worker**
+2. 起个名字（比如 `edge-speedway`），创建后点 **Edit code**
+3. 把 `edge-speedway.js` 全文粘贴进去，点 **Deploy**
+
+**命令行方式**
 
 ```bash
 npm i -g wrangler
 wrangler login
-wrangler deploy          # 使用仓库内的 wrangler.toml
+wrangler deploy
 ```
 
-或者直接在 Cloudflare 控制台新建 Worker，把 `edge-speedway.js` 全文粘贴进去。
+### 2. 在控制台手动设置跳转域名
 
-### 2. 配置站点列表
+仓库里**不存放任何域名**，站点列表只在 Cloudflare 控制台配置：
 
-在 Worker 的「设置 → 变量和机密」里新增环境变量 `TARGETS`：
+> Workers & Pages → 选中你的 Worker → **Settings / 设置** → **Variables and Secrets / 变量和机密** → **Add / 添加**
+
+- 变量名：`TARGETS`
+- 值：跳转域名列表，**每行一个**
 
 ```ini
 香港=https://hk.example.com
@@ -30,16 +41,23 @@ wrangler deploy          # 使用仓库内的 wrangler.toml
 新加坡=https://sg.example.com
 ```
 
-也支持逗号分隔、分号分隔，或者 JSON 数组 `["https://a.com","https://b.com"]`。
-`名称=` 前缀是可选的，只用于调试输出和跳转提示页展示。
+点 **Save and Deploy** 生效。之后访问 Worker 的域名，就会自动跳到测速最快的那一台。
 
-保存后访问你的 Worker 域名，应当直接被跳到最快的那一台。
+> **为什么不用 `wrangler.toml` 写这些变量？**
+> `wrangler deploy` 时，`wrangler.toml` 里的 `[vars]` 是普通环境变量的唯一来源，一次命令行部署会把你控制台手动加的普通变量**覆盖掉**。
+> 所以本仓库的 `wrangler.toml` 刻意留空。若你希望命令行部署也绝对碰不到这份配置，可以在控制台把 `TARGETS` 存成 **Secret / 机密**——wrangler 不会改动机密变量。
+
+域名写法的细节：也支持逗号分隔、分号分隔，或者 JSON 数组 `["https://a.com","https://b.com"]`；
+`名称=` 前缀是可选的，只用于调试输出和跳转提示页展示；不写协议时默认补 `https://`。
 
 ## 环境变量
 
+全部在 Cloudflare 控制台的 **Variables and Secrets / 变量和机密** 里手动设置，仓库内不含任何域名。
+除 `TARGETS` 外都不是必填，没设置的项自动使用下表默认值。
+
 | 变量 | 默认 | 说明 |
 | --- | --- | --- |
-| `TARGETS` | — | **必填**。站点列表，换行 / 逗号 / 分号 / JSON 数组均可 |
+| `TARGETS` | — | **必填，控制台手动配置**。站点列表，换行 / 逗号 / 分号 / JSON 数组均可 |
 | `FALLBACK` | 列表第一项 | 全部站点探测失败时的兜底，可填 URL 或列表序号（从 1 开始） |
 | `MODE` | `edge` | `edge` 边缘侧测速；`client` 交给浏览器测速（更贴近真实用户体验） |
 | `PROBES` | `3` | 探测轮数，上限 5 |
